@@ -9,12 +9,14 @@ export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @Post("/create")
-  create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.userService.createUser(createUserDto);
+  async reate(@Body() createUserDto: CreateUserDto): Promise<User> {
+    console.log("i am here ")
+    return await this.userService.createUser(createUserDto);
   }
   @Post("/login")
-  login(@Body() loginUserDto: LoginUserDto): Promise<Partial<User>> {
-    return this.userService.login(loginUserDto);
+  async login(@Body() loginUserDto: LoginUserDto) {
+    console.log("hello")
+    return await this.userService.login(loginUserDto);
   }
 
   /*

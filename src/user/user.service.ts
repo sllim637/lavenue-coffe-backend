@@ -6,6 +6,7 @@ import * as bcrypt from 'bcrypt'
 import { User } from './entities/user.entity';
 import { LoginUserDto } from './dto/login-user.dto';
 import { NotFoundError } from 'rxjs';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
@@ -13,10 +14,18 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
+    private jwtService : JwtService
   ) { }
 
 
   async createUser(createUserDto: CreateUserDto): Promise<User> {
+    const username = createUserDto.username
+    const existedUser = await this.usersRepository.createQueryBuilder("user")
+      .where("user.username = :username", { username }).getOne()
+    if(existedUser){
+      throw new ConflictException("there is a user existed with this username")
+    }
+
     const user = this.usersRepository.create({ ...createUserDto })
     user.salt = await bcrypt.genSalt()
     user.password = await bcrypt.hash(user.password, user.salt)
@@ -25,26 +34,29 @@ export class UserService {
     } catch (e) {
       throw new ConflictException('le username et le password doit etre unique.')
     }
-    console.log("user :", user)
-    return user
+    return await user
   }
 
 
 
 
-  async login(loginUserDto: LoginUserDto): Promise<Partial<User>> {
+  async login(loginUserDto: LoginUserDto) {
     const { username, password } = loginUserDto
     const user = await this.usersRepository.createQueryBuilder("user")
       .where("user.username = :username", { username }).getOne()
     if (!user) {
       throw new NotFoundException("uername does not exist !")
     }
-    const hashedPassword = bcrypt.hash(password, user.salt)
+
+    const hashedPassword = await bcrypt.hash(password, user.salt)
+
     if (hashedPassword === user.password) {
-      return {
+      const payload =  {
         username,
         role: user.role
       }
+      const jwt = await this.jwtService.sign(payload)
+      return {"access_token" : jwt}
     } else {
       throw new NotFoundException("the password is incorrect")
     }
