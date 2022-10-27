@@ -4,7 +4,7 @@ import { userRoleEnum } from "../user-roles-enum/user-role-enum"
 @Entity()
 export class User {
     @PrimaryGeneratedColumn()
-    userId: string
+    userId: number
     @Column()
     username: string
     @Column()

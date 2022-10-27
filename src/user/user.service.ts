@@ -5,7 +5,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt'
 import { User } from './entities/user.entity';
 import { LoginUserDto } from './dto/login-user.dto';
-import { NotFoundError } from 'rxjs';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()

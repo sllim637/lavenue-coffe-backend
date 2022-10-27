@@ -9,7 +9,7 @@ export class UserController {
   constructor(private readonly userService: UserService) { }
 
   @Post("/create")
-  async reate(@Body() createUserDto: CreateUserDto): Promise<User> {
+  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     console.log("i am here ")
     return await this.userService.createUser(createUserDto);
   }
