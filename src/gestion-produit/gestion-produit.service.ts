@@ -16,12 +16,18 @@ export class GestionProduitService {
     }
 
 
-    async createCategory(createCategoryDto: CreateCategoryDTO): Promise<Category> {
-        const newCategory = this.categoryRepository.create({ ...createCategoryDto })
-        if (!newCategory.categoryImage) {
-            console.log("pas d'image pour ce produit !")
-        }
+    async createCategory(createCategoryDto: any,imageUploaded): Promise<Category> {
+        let newCreateCategoryDTO : CreateCategoryDTO = new CreateCategoryDTO()
+        newCreateCategoryDTO.categoryName = createCategoryDto.product
+        newCreateCategoryDTO.categoryImage = imageUploaded.filename
+        console.log("the dto is :" , newCreateCategoryDTO)
+        const newCategory = this.categoryRepository.create({ ...newCreateCategoryDTO })
+        console.log("the final object is :" ,newCategory )
+        /*if (!newCategory.categoryImage) {
+            console.log("the image is not uploaded");  
+        }*/
         try {
+            
             this.categoryRepository.save(newCategory);
         } catch (e) {
             throw new ConflictException("probleme lors de l'insertion du category", e)
