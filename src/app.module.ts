@@ -10,7 +10,6 @@ import { GestionProduitModule } from './gestion-produit/gestion-produit.module';
 import { Category } from './gestion-produit/entities/category.entity';
 import { Product } from './gestion-produit/entities/product.entity';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
