@@ -1,7 +1,10 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, StreamableFile } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { createReadStream } from 'fs';
+import { join } from 'path';
 import { Repository } from 'typeorm';
 import { CreateCategoryDTO } from './dto/create-category.dto';
+import { GetCategoryDTO } from './dto/get-category.dto';
 import { Category } from './entities/category.entity';
 import { Product } from './entities/product.entity';
 
@@ -16,22 +19,44 @@ export class GestionProduitService {
     }
 
 
-    async createCategory(createCategoryDto: any,imageUploaded): Promise<Category> {
-        let newCreateCategoryDTO : CreateCategoryDTO = new CreateCategoryDTO()
+    async createCategory(createCategoryDto: any, imageUploaded): Promise<Category> {
+        let newCreateCategoryDTO: CreateCategoryDTO = new CreateCategoryDTO()
         newCreateCategoryDTO.categoryName = createCategoryDto.product
         newCreateCategoryDTO.categoryImage = imageUploaded.filename
-        console.log("the dto is :" , newCreateCategoryDTO)
         const newCategory = this.categoryRepository.create({ ...newCreateCategoryDTO })
-        console.log("the final object is :" ,newCategory )
-        /*if (!newCategory.categoryImage) {
-            console.log("the image is not uploaded");  
-        }*/
         try {
-            
+
             this.categoryRepository.save(newCategory);
         } catch (e) {
             throw new ConflictException("probleme lors de l'insertion du category", e)
         }
         return await newCategory;
     }
+
+    async getAllCategory(): Promise<GetCategoryDTO[]> {
+        let allCategoryToSend: GetCategoryDTO[] = []
+        let allCategory = await this.categoryRepository.find()
+
+        for (let i = 0; i < allCategory.length; i++) {
+            let newGetCategoryDTO = new GetCategoryDTO(
+                allCategory[i].categoryId,
+                allCategory[i].categoryName
+            )
+            const file = createReadStream(join(process.cwd(), 'files/' + allCategory[i].categoryImage));
+            newGetCategoryDTO.categoryImage = await new StreamableFile(file)
+            allCategoryToSend.push(newGetCategoryDTO)
+        }
+
+        return allCategoryToSend
+    }
+    async deleteCategory(id: number) {
+        let categoryExisted = await this.categoryRepository.find({ where: { categoryId: id } })
+        if (categoryExisted.length == 0) {
+            throw new NotFoundException("the category with this id is not found !")
+        }else{
+            console.log("the existed is :" , categoryExisted)
+            this.categoryRepository.delete(id)
+        }
+    }
+
 }

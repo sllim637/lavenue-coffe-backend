@@ -1,17 +1,18 @@
-import { Body, Controller, Get, Post, Req, Res, StreamableFile, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Req, Res, StreamableFile, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { createReadStream } from 'fs';
 import { diskStorage } from 'multer';
-import { extname, join } from 'path';
-import { CreateCategoryDTO } from './dto/create-category.dto';
+import { extname } from 'path';
+import { GetCategoryDTO } from './dto/get-category.dto';
 import { Category } from './entities/category.entity';
 import { GestionProduitService } from './gestion-produit.service';
 
 @Controller('productManagement')
 export class GestionProduitController {
-  constructor(private readonly gestionProduitService: GestionProduitService) { }
+  constructor(private readonly gestionProduitService: GestionProduitService
 
- 
+  ) { }
+
+
   @UseInterceptors(
     FileInterceptor('image',
       {
@@ -33,10 +34,12 @@ export class GestionProduitController {
   ): Promise<Category> {
     return this.gestionProduitService.createCategory(createCategoryDto, image)
   }
-  @Get()
-  getFile(): StreamableFile {
-    const file = createReadStream(join(process.cwd(), 'files/coffe.png-1668454444023-58537080.png'));
-    return new StreamableFile(file);
+  @Get("getAll")
+  async getAll(): Promise<GetCategoryDTO[]> {
+    return this.gestionProduitService.getAllCategory()
   }
-
+  @Delete(':id')
+  async deleteCategory(@Param('id', new ParseIntPipe()) id: number) {
+    this.gestionProduitService.deleteCategory(id)
+  }
 }
