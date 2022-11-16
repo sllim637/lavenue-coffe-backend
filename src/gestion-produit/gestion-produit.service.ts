@@ -2,7 +2,7 @@ import { ConflictException, Injectable, NotFoundException, StreamableFile } from
 import { InjectRepository } from '@nestjs/typeorm';
 import { createReadStream } from 'fs';
 import { join } from 'path';
-import { Repository } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { CreateCategoryDTO } from './dto/create-category.dto';
 import { GetCategoryDTO } from './dto/get-category.dto';
 import { Category } from './entities/category.entity';
@@ -25,7 +25,6 @@ export class GestionProduitService {
         newCreateCategoryDTO.categoryImage = imageUploaded.filename
         const newCategory = this.categoryRepository.create({ ...newCreateCategoryDTO })
         try {
-
             this.categoryRepository.save(newCategory);
         } catch (e) {
             throw new ConflictException("probleme lors de l'insertion du category", e)
@@ -53,10 +52,27 @@ export class GestionProduitService {
         let categoryExisted = await this.categoryRepository.find({ where: { categoryId: id } })
         if (categoryExisted.length == 0) {
             throw new NotFoundException("the category with this id is not found !")
-        }else{
-            console.log("the existed is :" , categoryExisted)
+        } else {
             this.categoryRepository.delete(id)
         }
+    }
+    async getCategoryById(id: number): Promise<GetCategoryDTO> {
+        let category = await this.categoryRepository.findOne({ where: { categoryId: id } })
+        if (!category) {
+            new NotFoundException("the category with this id does not exist")
+        } else {
+            let getCategoryDTO = new GetCategoryDTO(category.categoryId, category.categoryName)
+            const file = createReadStream(join(process.cwd(), 'files/' + category.categoryImage))
+            getCategoryDTO.categoryImage = await new StreamableFile(file)
+            return getCategoryDTO
+        }
+    }
+    async updateCategory(id: number, createCategoryDto: any, imageUploaded): Promise<UpdateResult> {
+        let newCreateCategoryDTO: CreateCategoryDTO = new CreateCategoryDTO()
+        newCreateCategoryDTO.categoryName = createCategoryDto.product
+        newCreateCategoryDTO.categoryImage = imageUploaded.filename
+        const newCategory = this.categoryRepository.create({ ...newCreateCategoryDTO })
+        return await this.categoryRepository.update(id, newCategory)
     }
 
 }
