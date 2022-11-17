@@ -4,6 +4,7 @@ import { createReadStream } from 'fs';
 import { join } from 'path';
 import { Repository, UpdateResult } from 'typeorm';
 import { CreateCategoryDTO } from './dto/create-category.dto';
+import { CreateProductDTO } from './dto/createProduct.dto';
 import { GetCategoryDTO } from './dto/get-category.dto';
 import { Category } from './entities/category.entity';
 import { Product } from './entities/product.entity';
@@ -73,6 +74,32 @@ export class GestionProduitService {
         newCreateCategoryDTO.categoryImage = imageUploaded.filename
         const newCategory = this.categoryRepository.create({ ...newCreateCategoryDTO })
         return await this.categoryRepository.update(id, newCategory)
+    }
+
+    /******************************************************************************/
+
+    async createProduct(createProductDTO: CreateProductDTO, imageUploaded): Promise<Product> {
+
+        const newProduct: CreateProductDTO = new CreateProductDTO()
+        newProduct.productName = createProductDTO.productName
+        newProduct.productPrice = createProductDTO.productPrice
+        newProduct.productImage = imageUploaded.filename
+        newProduct.devise = createProductDTO.devise
+        let category = await this.categoryRepository.findOne({ where: { categoryId: createProductDTO.categoryId } })
+        let product = new Product()
+        product = await this.productRepository.create({ ...newProduct })
+        if (category) {
+            product.category = category
+        } else {
+            throw new NotFoundException("the category of the product does not exist !")
+        }
+
+        try {
+            this.productRepository.save(product);
+        } catch (e) {
+            throw new ConflictException("probleme lors de l'insertion du produit", e)
+        }
+        return await product;
     }
 
 }

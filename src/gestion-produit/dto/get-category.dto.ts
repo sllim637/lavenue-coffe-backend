@@ -5,6 +5,7 @@ export class GetCategoryDTO{
         this.categoryId = id;
         this.categoryName = name
     }
+    
     categoryId: number
     categoryName: string
     categoryImage: StreamableFile

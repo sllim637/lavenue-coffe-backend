@@ -6,7 +6,7 @@ import { Category } from "./category.entity";
 @Entity()
 export class Product {
     @PrimaryGeneratedColumn()
-    categoryId: number
+    productId: number
     @Column()
     @MaxLength(20)
     productName: string
