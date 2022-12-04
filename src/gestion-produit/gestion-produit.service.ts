@@ -2,6 +2,7 @@ import { ConflictException, Injectable, NotFoundException, StreamableFile } from
 import { InjectRepository } from '@nestjs/typeorm';
 import { createReadStream } from 'fs';
 import { join } from 'path';
+import { json } from 'stream/consumers';
 import { Repository, UpdateResult } from 'typeorm';
 import { CreateCategoryDTO } from './dto/create-category.dto';
 import { CreateProductDTO } from './dto/createProduct.dto';
@@ -57,15 +58,12 @@ export class GestionProduitService {
             this.categoryRepository.delete(id)
         }
     }
-    async getCategoryById(id: number): Promise<GetCategoryDTO> {
+    async getCategoryById(id: number): Promise<Category> {
         let category = await this.categoryRepository.findOne({ where: { categoryId: id } })
         if (!category) {
             new NotFoundException("the category with this id does not exist")
-        } else {
-            let getCategoryDTO = new GetCategoryDTO(category.categoryId, category.categoryName)
-            const file = createReadStream(join(process.cwd(), 'files/' + category.categoryImage))
-            getCategoryDTO.categoryImage = await new StreamableFile(file)
-            return getCategoryDTO
+        }else{
+            return category
         }
     }
     async updateCategory(id: number, createCategoryDto: any, imageUploaded): Promise<UpdateResult> {
@@ -102,4 +100,26 @@ export class GestionProduitService {
         return await product;
     }
 
+    async getProductsByCategory(categoryId : number): Promise<Product[]> {
+        let products :Promise<Product[]>
+        let category = await this.categoryRepository.findOne({where : {categoryId : categoryId}})
+        if(category){
+            products = this.productRepository.find({where : {category  : category}})
+        }else{
+            throw new NotFoundException("the category with this id does not exist !")
+        }
+        return  await products
+    }
+    async updateProduct(id: number, createProductDTO: any, imageUploaded): Promise<UpdateResult> {
+        let newCreateProductDTO : CreateProductDTO = JSON.parse(createProductDTO.product)
+        console.log(imageUploaded)
+        if(imageUploaded){
+            console.log("I am here !")
+            newCreateProductDTO.productImage = imageUploaded.filename
+            console.log("after putting the image :" , newCreateProductDTO)
+        }
+        const updateProduct : Product = await this.productRepository.create({...newCreateProductDTO })
+        console.log(updateProduct)
+        return this.productRepository.update(id,updateProduct)
+    }
 }

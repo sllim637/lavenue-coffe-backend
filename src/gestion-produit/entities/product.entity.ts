@@ -16,7 +16,7 @@ export class Product {
     productPrice: number
     @Column()
     devise: string
-    @ManyToOne(() => Category, (category) => category.products)
+    @ManyToOne(() => Category, (category) => category.products , {eager : true})
     category : Category
     
 }

@@ -24,6 +24,7 @@ import { Product } from './gestion-produit/entities/product.entity';
       database: 'caffe-database',
       entities: [User,Category,Product],
       synchronize: true,
+      autoLoadEntities:true,
     }),
 
     DemoModule,
