@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, Res, StreamableFile, UploadedFile, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, Res, StreamableFile, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { getEventListeners } from 'events';
@@ -11,6 +11,9 @@ import { Category } from './entities/category.entity';
 import { Product } from './entities/product.entity';
 import { GestionProduitService } from './gestion-produit.service';
 import { Response } from "express";
+import { AuthGuard } from '@nestjs/passport';
+import { User } from 'src/user/entities/user.entity';
+import  { User as UserFromReq } from '../user/decorator/user.decorator'
 @Controller('productManagement')
 export class GestionProduitController {
   constructor(private readonly gestionProduitService: GestionProduitService
@@ -41,8 +44,10 @@ export class GestionProduitController {
     return this.gestionProduitService.createCategory(createCategoryDto, image)
   }
 
+@UseGuards(AuthGuard('jwt'))
   @Get("getAll")
-  async getAllCategory(): Promise<GetCategoryDTO[]> {
+  async getAllCategory(@UserFromReq() user: User): Promise<GetCategoryDTO[]> {
+    console.log("the user catched from the request is :" , user)
     return this.gestionProduitService.getAllCategory()
   }
 

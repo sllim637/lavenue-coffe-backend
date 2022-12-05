@@ -13,7 +13,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private usersRepository: Repository<User>,
-    private jwtService : JwtService
+    private jwtService: JwtService
   ) { }
 
 
@@ -21,7 +21,7 @@ export class UserService {
     const username = createUserDto.username
     const existedUser = await this.usersRepository.createQueryBuilder("user")
       .where("user.username = :username", { username }).getOne()
-    if(existedUser){
+    if (existedUser) {
       throw new ConflictException("there is a user existed with this username")
     }
 
@@ -37,8 +37,6 @@ export class UserService {
   }
 
 
-
-
   async login(loginUserDto: LoginUserDto) {
     const { username, password } = loginUserDto
     const user = await this.usersRepository.createQueryBuilder("user")
@@ -46,33 +44,17 @@ export class UserService {
     if (!user) {
       throw new NotFoundException("uername does not exist !")
     }
-
     const hashedPassword = await bcrypt.hash(password, user.salt)
-
     if (hashedPassword === user.password) {
-      const payload =  {
+      const payload = {
         username,
-        role: user.role
+        role: user.role,
+        userId: user.userId
       }
       const jwt = await this.jwtService.sign(payload)
-      return {"access_token" : jwt}
+      return { "access_token": jwt }
     } else {
       throw new NotFoundException("the password is incorrect")
     }
   }
-
-
-
-  /*
-    findOne(id: number) {
-      return `This action returns a #${id} user`;
-    }
-  
-    update(id: number, updateUserDto: UpdateUserDto) {
-      return `This action updates a #${id} user`;
-    }
-  
-    remove(id: number) {
-      return `This action removes a #${id} user`;
-    }*/
 }
