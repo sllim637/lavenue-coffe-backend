@@ -1,5 +1,6 @@
 import { MaxLength } from "class-validator";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Historique } from "src/gestion-historique/entities/historique.entity";
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { Category } from "./category.entity";
 
 
@@ -18,5 +19,7 @@ export class Product {
     devise: string
     @ManyToOne(() => Category, (category) => category.products , {eager : true})
     category : Category
+    @OneToMany(() => Historique, (historique) => historique.product , { onDelete: 'CASCADE' })
+    historiques : Historique[]
     
 }
