@@ -2,7 +2,6 @@ import { ConflictException, Injectable, NotFoundException, StreamableFile } from
 import { InjectRepository } from '@nestjs/typeorm';
 import { createReadStream } from 'fs';
 import { join } from 'path';
-import { json } from 'stream/consumers';
 import { Repository, UpdateResult } from 'typeorm';
 import { CreateCategoryDTO } from './dto/create-category.dto';
 import { CreateProductDTO } from './dto/createProduct.dto';
