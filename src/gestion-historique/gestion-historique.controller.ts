@@ -13,6 +13,6 @@ export class GestionHistoriqueController {
   @Post("ajouterHistorique")
   async addHistorique(@Body() createHistorique: CreateHistoriqueDTO,
     @UserFromReq() user: User) {
-    this.gestionHistoriqueService.addHistory(createHistorique, user)
+    this.gestionHistoriqueService.add_update_History(createHistorique, user)
   }
 }

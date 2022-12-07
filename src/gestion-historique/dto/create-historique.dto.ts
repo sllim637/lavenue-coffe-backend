@@ -11,5 +11,5 @@ class Command {
     productId : number
     @IsNumber()
     @IsNotEmpty()
-    quanity : number
+    quantity : number
 }

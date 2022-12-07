@@ -14,24 +14,25 @@ export class GestionHistoriqueService {
         private productRepository: Repository<Product>
     ) { }
 
-    async addHistory(createHistoriqueDTO: CreateHistoriqueDTO, user: User) {
+    async add_update_History(createHistoriqueDTO: CreateHistoriqueDTO, user: User) {
         for (let i = 0; i < createHistoriqueDTO.commands.length; i++) {
             let historique = new Historique()
             historique.dateOfCommand = new Date(createHistoriqueDTO.date).toLocaleDateString('en-GB')
             historique.userId = user.userId,
-                historique.quantity = createHistoriqueDTO.commands[i].quanity
+                historique.quantity = createHistoriqueDTO.commands[i].quantity
             historique.product = await this.productRepository.findOne({ where: { productId: createHistoriqueDTO.commands[i].productId } })
             let fetchedHistory = await this.historiqueRepository.findOne({
                 where: {
-                    dateOfCommand: new Date (createHistoriqueDTO.date).toLocaleDateString('en-GB'),
+                    dateOfCommand: new Date(createHistoriqueDTO.date).toLocaleDateString('en-GB'),
                     userId: user.userId,
                     product: historique.product
                 }
             })
             if (!fetchedHistory) {
-                console.log('I am here no historique and the new object is ',historique )
+                await this.historiqueRepository.save(historique)
             } else {
-                console.log("I am updating the object " , fetchedHistory)
+                fetchedHistory.quantity += Number(historique.quantity)
+                await this.historiqueRepository.update(fetchedHistory.historiqueId, fetchedHistory)
             }
         }
     }
