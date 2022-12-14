@@ -10,8 +10,8 @@ export class Historique {
     historiqueId: number
     @ManyToOne(() => Product, (product) => product.historiques , {eager : true})
     product : Product
-    @Column()
-    dateOfCommand : string
+    @Column({type : 'date'})
+    dateOfCommand : Date
     @Column()
     quantity : number
     //this column is created to know who is created the command
