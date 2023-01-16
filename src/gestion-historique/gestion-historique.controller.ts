@@ -3,6 +3,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { User as UserFromReq } from 'src/user/decorator/user.decorator';
 import { User } from 'src/user/entities/user.entity';
 import { CreateHistoriqueDTO } from './dto/create-historique.dto';
+import { Historique } from './entities/historique.entity';
 import { GestionHistoriqueService } from './gestion-historique.service';
 
 @Controller('gestionHistorique')
@@ -16,7 +17,7 @@ export class GestionHistoriqueController {
     this.gestionHistoriqueService.add_update_History(createHistorique, user)
   }
   @Get("getHistoriqueByDates/:dateOfStart/:DateOfEnd")
-  async getByDates(@Param("dateOfStart") dateOfStart: Date, @Param("DateOfEnd") dateOfEnd: Date) {
-    this.gestionHistoriqueService.getHistoriqueByDates(dateOfStart, dateOfEnd)
+  async getByDates(@Param("dateOfStart") dateOfStart: Date, @Param("DateOfEnd") dateOfEnd: Date): Promise<Historique[]> {
+    return this.gestionHistoriqueService.getHistoriqueByDates(dateOfStart, dateOfEnd)
   }
 }

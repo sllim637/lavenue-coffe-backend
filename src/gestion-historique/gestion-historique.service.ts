@@ -34,16 +34,17 @@ export class GestionHistoriqueService {
                 fetchedHistory.quantity += Number(historique.quantity)
                 await this.historiqueRepository.update(fetchedHistory.historiqueId, fetchedHistory)
             }
-        } 
+        }
     }
 
-    async getHistoriqueByDates(dateOfStart: Date, dateOfEnd: Date) {
-        console.log("the dates are :" , dateOfEnd , dateOfStart);
-        let historiques = await this.historiqueRepository.find({where : {
-            dateOfCommand : Between(dateOfStart,dateOfEnd)
-        }})
-        console.log('nous attendons : ' , 6 , " et nous avons "  , historiques.length)
-        console.log("the fetched data is :" , historiques)
+    async getHistoriqueByDates(dateOfStart: Date, dateOfEnd: Date): Promise<Historique[]> {
+        console.log("the dates are :", dateOfEnd, dateOfStart);
+        let historiques = await this.historiqueRepository.find({
+            where: {
+                dateOfCommand: Between(dateOfStart, dateOfEnd)
+            }
+        })
+        return historiques
     }
 
 }
