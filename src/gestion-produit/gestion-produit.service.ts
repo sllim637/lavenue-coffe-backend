@@ -24,8 +24,14 @@ export class GestionProduitService {
         let newCreateCategoryDTO: CreateCategoryDTO = new CreateCategoryDTO()
         newCreateCategoryDTO.categoryName = createCategoryDto.product
         newCreateCategoryDTO.categoryImage = imageUploaded.filename
+        console.log("the dto is :", newCreateCategoryDTO)
         const newCategory = this.categoryRepository.create({ ...newCreateCategoryDTO })
+        console.log("the final object is :", newCategory)
+        /*if (!newCategory.categoryImage) {
+            console.log("the image is not uploaded");  
+        }*/
         try {
+
             this.categoryRepository.save(newCategory);
         } catch (e) {
             throw new ConflictException("probleme lors de l'insertion du category", e)
@@ -61,7 +67,7 @@ export class GestionProduitService {
         let category = await this.categoryRepository.findOne({ where: { categoryId: id } })
         if (!category) {
             new NotFoundException("the category with this id does not exist")
-        }else{
+        } else {
             return category
         }
     }
@@ -99,26 +105,26 @@ export class GestionProduitService {
         return await product;
     }
 
-    async getProductsByCategory(categoryId : number): Promise<Product[]> {
-        let products :Promise<Product[]>
-        let category = await this.categoryRepository.findOne({where : {categoryId : categoryId}})
-        if(category){
-            products = this.productRepository.find({where : {category  : category}})
-        }else{
+    async getProductsByCategory(categoryId: number): Promise<Product[]> {
+        let products: Promise<Product[]>
+        let category = await this.categoryRepository.findOne({ where: { categoryId: categoryId } })
+        if (category) {
+            products = this.productRepository.find({ where: { category: category } })
+        } else {
             throw new NotFoundException("the category with this id does not exist !")
         }
-        return  await products
+        return await products
     }
     async updateProduct(id: number, createProductDTO: any, imageUploaded): Promise<UpdateResult> {
-        let newCreateProductDTO : CreateProductDTO = JSON.parse(createProductDTO.product)
+        let newCreateProductDTO: CreateProductDTO = JSON.parse(createProductDTO.product)
         console.log(imageUploaded)
-        if(imageUploaded){
+        if (imageUploaded) {
             console.log("I am here !")
             newCreateProductDTO.productImage = imageUploaded.filename
-            console.log("after putting the image :" , newCreateProductDTO)
+            console.log("after putting the image :", newCreateProductDTO)
         }
-        const updateProduct : Product = await this.productRepository.create({...newCreateProductDTO })
+        const updateProduct: Product = await this.productRepository.create({ ...newCreateProductDTO })
         console.log(updateProduct)
-        return this.productRepository.update(id,updateProduct)
+        return this.productRepository.update(id, updateProduct)
     }
 }

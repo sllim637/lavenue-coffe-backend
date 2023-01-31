@@ -1,24 +1,22 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, Res, StreamableFile, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put, Req, Res, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
-import { getEventListeners } from 'events';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { UpdateResult } from 'typeorm';
-import { CreateProductDTO } from './dto/createProduct.dto';
-import { GetCategoryDTO } from './dto/get-category.dto';
+import { CreateCategoryDTO } from './dto/create-category.dto';
 import { Category } from './entities/category.entity';
 import { Product } from './entities/product.entity';
 import { GestionProduitService } from './gestion-produit.service';
 import { Response } from "express";
 import { AuthGuard } from '@nestjs/passport';
 import { User } from 'src/user/entities/user.entity';
-import  { User as UserFromReq } from '../user/decorator/user.decorator'
+import { User as UserFromReq } from '../user/decorator/user.decorator'
+import { GetCategoryDTO } from './dto/get-category.dto';
+import { UpdateResult } from 'typeorm';
+import { ApiConsumes } from '@nestjs/swagger';
+import { CreateProductDTO } from './dto/createProduct.dto';
 @Controller('productManagement')
 export class GestionProduitController {
-  constructor(private readonly gestionProduitService: GestionProduitService
-
-  ) { }
+  constructor(private readonly gestionProduitService: GestionProduitService) { }
 
 
   @UseInterceptors(
@@ -35,7 +33,6 @@ export class GestionProduitController {
         })
       }
     ))
-
   @Post("/createCategory")
   async create(
     @Body() createCategoryDto: any,
@@ -44,10 +41,10 @@ export class GestionProduitController {
     return this.gestionProduitService.createCategory(createCategoryDto, image)
   }
 
-@UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard('jwt'))
   @Get("getAll")
   async getAllCategory(@UserFromReq() user: User): Promise<GetCategoryDTO[]> {
-    console.log("the user catched from the request is :" , user)
+    console.log("the user catched from the request is :", user)
     return this.gestionProduitService.getAllCategory()
   }
 
