@@ -12,4 +12,9 @@ pipeline {
 				echo "I am testing the application"
 }
 }
+		stage("deploy"){
+			steps{
+				echo "I am deploying the application"
+			}
+		}
 }
