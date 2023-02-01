@@ -10,6 +10,9 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'I am Testing..'
+				script {
+					sh 'docker build -t lavenue-app:1.0 '
+				}
             }
         }
         stage('Deploy') {
