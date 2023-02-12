@@ -1,29 +1,33 @@
 pipeline {
-    agent any
-    tools { nodejs 'node' }
-    stages {
-        stage('Build') {
-            steps {
-                echo 'I am Building..'
-                sh 'npm install '
+    agent any 
+    stages { 
+        stage("build") {
+            steps{
+                echo "I am building the app"
             }
         }
-        stage('build image') {
-            steps {
-                script {
-                    echo 'I am Building the application..'
-                    sh 'docker build -t lavenue-app:1.0'
-                    /* groovylint-disable-next-line LineLength, NestedBlockDepth */
-                    withCredentials([usernamePassword(credentialsId : 'docker-hub-account' , passwordVariable: 'PASS', usernameVariable:'USER')]) {
-                    // now i have access tho this variables
-                    }
-                }
+         stage("test") {
+            steps{
+                echo "I am testing the app"
             }
         }
-        stage('Deploy') {
-            steps {
-                echo 'I am Deploying....'
+         stage("deploy") {
+            steps{
+                echo "I am deployin the app"
             }
+        }
+}
+    post {
+        always {
+            echo "I am always executing after all steps"
+        }
+
+        success {
+            echo "I am succeed !"
+        }
+        failure {
+            echo "sorry , I failed to do you steps"
         }
     }
-}
+
+}  

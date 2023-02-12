@@ -18,8 +18,8 @@ import { Product } from './gestion-produit/entities/product.entity';
     TypeOrmModule.forRoot({
       type: 'mysql',
       host: 'localhost',
-      port: 3306,
-      username: 'root',
+      port: 3307,//3306
+      username: 'slim',//root
       password: '28360788',
       database: 'caffe-database',
       entities: [User,Category,Product],

@@ -1,0 +1,23 @@
+version: '3.6'
+services:
+  mysql:
+    environment:
+      - MYSQL_DATABASE=caffe-database
+      - MYSQL_ROOT_PASSWORD=28360788
+      - MYSQL_USER=slim
+      - MYSQL_PASSWORD=28360788
+    command:
+      - --table_definition_cache=100
+      - --performance_schema=0
+      - --default-authentication-plugin=mysql_native_password
+      - --innodb_use_native_aio=0
+    container_name: mysql-container
+    image: mysql:8.0.32
+    ports:
+      - 3307:3306
+
+  lavenue-backend:
+    container_name: avenue-backend-app
+    image: lavenue-backend
+    ports:
+      - 3000:3000
