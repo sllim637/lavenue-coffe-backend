@@ -1,46 +1,27 @@
-//this variable will be true if there is some changes in the code
-// CODE_CHANGES = getGitChanges()
 pipeline {
     agent any 
+    environment {
+        NEX_VERSION = "3.1.0"
+        SERVER_CREDENTIALS = credentials('docker-hub-account')
+    }
     stages { 
+        //all the stages for example the test stage or build stage and dockerize stage and deploy stage
         stage("build") {
-            // when {
-            //     expression {
-            //         BRANCH_NAME == "dev" && CODE_CHANGES == true
-            //     }
-            // }
             steps{
                 echo "I am building the app"
             }
         }
-         stage("test") {
-             //the steps will execute if the expression is true
-             when {
-                 expression {
-                     BRANCH_NAME == 'dev' || BRANCH_NAME == 'master' 
-                 }
-             }
+        stage("test") {
             steps{
                 echo "I am testing the app"
             }
         }
-         stage("deploy") {
+        stage("deploy") {
             steps{
-                echo "I am deployin the app"
+                echo "I am deploying the app"
+                echo "I use this credentials ${SERVER_CREDENTIALS}"
+                sh "${SERVER_CREDENTIALS}"
             }
         }
-}
-    post {
-        always {
-            echo "I am always executing after all steps"
-        }
 
-        success {
-            echo "I am succeed !"
-        }
-        failure {
-            echo "sorry , I failed to do you steps"
-        }
-    }
-
-}  
+}}  
