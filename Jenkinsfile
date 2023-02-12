@@ -1,14 +1,14 @@
 //this variable will be true if there is some changes in the code
-CODE_CHANGES = getGitChanges()
+// CODE_CHANGES = getGitChanges()
 pipeline {
     agent any 
     stages { 
         stage("build") {
-            when {
-                expression {
-                    BRANCH_NAME == "dev" && CODE_CHANGES == true
-                }
-            }
+            // when {
+            //     expression {
+            //         BRANCH_NAME == "dev" && CODE_CHANGES == true
+            //     }
+            // }
             steps{
                 echo "I am building the app"
             }
